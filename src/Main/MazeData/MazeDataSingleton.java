@@ -1,5 +1,242 @@
-package Main.MazeData;
+package AmazeingGui.MazeData;
 
-public class MazeDataSingleton {
+import AmazeingGui.CustomEventManager;
+import AmazeingGui.EventType;
 
+import java.util.*;
+
+public final class MazeBrowse
+public class MazeBrowse{
+
+
+
+
+    public static final byte Route = -2; //sciezka
+    public static final byte Wall = -1; //sciana
+    public static final byte Path = 0; //przestrzen
+
+    private String source; //źródło labiryntu
+    private byte[][] maze; //tablica reprezentująca labirynt
+    private Coordinates entry; //współrzędne P
+    private Coordinates exit; //współrzędne K
+    private boolean isSolved; //Czy rozwiązany?
+
+    private static MazeBrowse instance; //jedyna instancja tej klasy
+
+    private MazeBrowse() //konstruktor, który rezerwuje 1000x1000  na labirynt i ustawia że jest nierozwiązany
+    {
+        byte[][] fill = new byte[1000][1000];
+
+        for(byte[] row : fill)
+            Arrays.fill(row, (byte) 0); //labirynt uzupełniony zerami
+
+        maze = fill;
+        isSolved = false;
+    }
+
+    public static void initialize()   // inicjalizacja jednynej instancji tej klasy
+    {
+        instance = new MazeBrowse();
+    }
+
+    public synchronized void changeMaze(byte[][] maze, Coordinates entry, Coordinates exit, String source) { //zmienia labirynt na podstawie nowych danaych PO CO
+        this.maze = maze;
+        this.entry = entry;
+        this.exit = exit;
+        this.source = source;
+        this.isSolved = false;
+    }
+
+    private synchronized void clearRoute() //czyści ścieżkę w przypadku ponownego rozwiązania PO CO
+    {
+        for(byte[] arr : maze)
+            for(int i = 0; i < width(); i++)
+                if(arr[i] == Route)
+                    arr[i] = Path;
+
+        isSolved = false;
+    }
+
+    public static MazeBrowse getInstance() { //zwraca instancję klasy
+        return instance;
+    }
+
+    public synchronized int width() { //zwraca szerokość labiryntu (liczba kolumn)
+        return maze[0].length;
+
+    }
+
+    public synchronized int height() { //zwraca wysokość labiryntu (liczba wierszy)
+        return maze.length;
+    }
+
+    public synchronized void setExit(Coordinates newCoordinates) { //nowe współrzędne  wyjścia, sprawdza czy są w granicach labiryntu PO CO
+        if(newCoordinates.x >= width() || newCoordinates.y >= height()) {
+            System.err.println("Error setting the exit location in the maze: " + newCoordinates.x + ", " + newCoordinates.y);
+            return;
+        }
+        clearRoute();
+        if(newCoordinates.equals(entry))
+            entry = null;
+
+        exit = newCoordinates;
+    }
+
+    public synchronized void setEntry(Coordinates newCoordinates) { //nowe współrzędne  wejścia, sprawdza czy są w granicach labiryntu PO CO
+        if(newCoordinates.x >= width() || newCoordinates.y >= height()) {
+            System.err.println("Error setting the exit location in the maze: " + newCoordinates.x + ", " + newCoordinates.y);
+            return;
+        }
+        clearRoute();
+        if(newCoordinates.equals(exit))
+            exit = null;
+
+        entry = newCoords;
+    }
+
+    public synchronized byte[][] getMaze() { //zwraca aktualny stan labiryntu
+        return maze;
+    }
+
+    public synchronized Coords getEntry() { //zwraca aktualne wspł. wejścia
+        return entry;
+    }
+
+    public synchronized Coords getExit() {//zwraca aktualne wspł. wyjścia
+        return exit;
+    }
+
+    public synchronized String getSource() //zwraca aktualny plik źródłowy labiryntu  chyba????
+    {
+        return source;
+    }
+
+    public synchronized void solve() //rozpoczyna rozwiązywanie w nowym wątku
+    {
+        if(entry == null || exit == null)
+            throw new RuntimeException("Cannot start solving while entrance / exit is null!");
+
+        Thread thread = new Thread(this::insideSolve);
+        thread.start();
+    }
+
+    private synchronized void insideSolve() //rozwiązany?
+    {
+
+        int[][] intMaze = new int[maze.length][maze[0].length];
+
+        for (int i = 0; i < maze.length; i++) {
+            for (int j = 0; j < maze[i].length; j++) {
+                if(maze[i][j] == 0 || (entry.x == j && entry.y == i) || (exit.x == j && exit.y == i))
+                    intMaze[i][j] = Integer.MAX_VALUE;
+                else
+                    intMaze[i][j] = -1;
+            }
+        }
+
+        boolean solveFlag = false;
+
+        DJQueue djQueue = new DJQueue();
+
+        djQueue.addToQueue(entry, 0);
+        intMaze[entry.y][entry.x] = 0;
+
+        while(!djQueue.isEmpty())
+        {
+            int currLen = djQueue.peekLength();
+            Coords currCoordinates = djQueue.popCoordinates();
+
+            if(currCoordinates.equals(exit))
+            {
+                solveFlag = true;
+                break;
+            }
+
+            int x = currCoordinates.x;
+            int y = currCoordinates.y;
+
+            if(x > 0){
+                if(intMaze[y][x-1] > currLen + 1) {
+                    djQueue.addToQueue(new Coordinates(x - 1, y), currLen + 1);
+                    intMaze[y][x-1] = currLen + 1;
+                }
+            }
+            if(x < width() - 1){
+                if(intMaze[y][x+1] > currLen + 1) {
+                    djQueue.addToQueue(new Coordinates(x + 1, y), currLen + 1);
+                    intMaze[y][x+1] = currLen + 1;
+                }
+            }
+            if(y > 0){
+                if(intMaze[y-1][x] > currLen + 1) {
+                    djQueue.addToQueue(new Coordinates(x, y - 1), currLen + 1);
+                    intMaze[y-1][x] = currLen + 1;
+                }
+            }
+            if(y < height() - 1){
+                if(intMaze[y+1][x] > currLen + 1) {
+                    djQueue.addToQueue(new Coordinates(x, y + 1), currLen + 1);
+                    intMaze[y+1][x] = currLen + 1;
+                }
+            }
+        }
+
+        if(!solveFlag) {
+            CustomEventManager.getInstance().callEvent(EventType.solveFinishEvent);
+            return;
+        }
+        Coordinates currCoordinates = exit;
+        int currLen = intMaze[exit.y][exit.x];
+
+        while(currLen > 1)
+        {
+            currLen--;
+
+            int x = currCoordinates.x;
+            int y = currCoordinates.y;
+
+            if(x > 0){
+                if(intMaze[y][x-1] == currLen) {
+                    maze[y][x-1] = -2;
+                    currCoordinates = new Coordinates(x-1, y);
+                    continue;
+                }
+            }
+            if(x < width() - 1){
+                if(intMaze[y][x+1] == currLen) {
+                    maze[y][x+1] = -2;
+                    currCoordinates = new Coordinates(x+1, y);
+                    continue;
+                }
+            }
+            if(y > 0){
+                if(intMaze[y-1][x] == currLen) {
+                    maze[y-1][x] = -2;
+                    currCoordinates = new Coordinates(x, y-1);
+                    continue;
+                }
+            }
+            if(y < height() - 1){
+                if(intMaze[y+1][x] == currLen) {
+                    maze[y+1][x] = -2;
+                    currCoordinates = new Coordinates(x, y+1);
+                    continue;
+                }
+            }
+            throw new RuntimeException("Cannot backtrack a route after finding a solution! THIS SHOULD NOT HAPPEN AND MEANS THERE IS AN ERROR IN THE ALGORITHM");
+
+        }
+
+        isSolved = true;
+        CustomEventManager.getInstance().callEvent(EventType.solveFinishEvent);
+
+    }
+
+    public boolean isSolved() {
+        return isSolved;
+    }
+
+    public void setSolved(boolean solveFlag) {
+        isSolved = solveFlag;
+    }
 }
