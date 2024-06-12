@@ -7,7 +7,7 @@ import java.util.*;
 class Main {
     public static void main(String[] args) {
         CustomEventManager.initialize();
-        MazeDataSingleton.initialize();
+        MazeBrowse.initialize();
 
         SwingUtilities.invokeLater(() -> {
             setLookAndFeel();
