@@ -102,7 +102,7 @@ public class MazeBrowse{
         return exit;
     }
 
-    public synchronized String getSource() //zwraca aktualny plik źródłowy labiryntu  chyba????
+    public synchronized String getSource() //zwraca aktualny plik źródłowy labiryntu
     {
         return source;
     }
