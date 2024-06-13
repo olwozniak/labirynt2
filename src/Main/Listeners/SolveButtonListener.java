@@ -3,7 +3,7 @@ package Main.Listeners;
 import Main.CustomEventManager;
 import Main.EventType;
 import Main.GUI.ControlPanelComposite;
-import Main.MazeData.MazeDataSingleton;
+import Main.MazeData.MazeBrowse;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,7 +18,7 @@ public class SolveButtonListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        MazeDataSingleton.getInstance().solve();
+        MazeBrowse.getInstance().solve();
         CustomEventManager.getInstance().callEvent(EventType.solveBeginEvent);
     }
 }

@@ -2,7 +2,7 @@ package Main.ActionObservers;
 
 import Main.GUI.ButtonEnum;
 import Main.GUI.ControlPanelComposite;
-import Main.MazeData.MazeDataSingleton;
+import Main.MazeData.MazeBrowse;
 
 import javax.swing.*;
 
@@ -26,7 +26,7 @@ public class SolveFinishObserver extends GuiObserver{
         controlPanelComposite.setButtonState(ButtonEnum.chooseFileButton, true);
         controlPanelComposite.setButtonState(ButtonEnum.writeFileButton, true);
 
-        MazeDataSingleton data = MazeDataSingleton.getInstance();
+        MazeBrowse data = MazeBrowse.getInstance();
 
         String exitString;
         String entryString;

@@ -4,7 +4,10 @@ import Main.GUI.ButtonEnum;
 import Main.GUI.ControlPanelComposite;
 import Main.Listeners.ListenerFactory;
 import Main.Listeners.MazeMouseActionListener;
-
+import Main.ActionObservers.ChangeCoordsObserver;
+import Main.ActionObservers.FileReadObserver;
+import Main.ActionObservers.SolveBeginObserver;
+import Main.ActionObservers.SolveFinishObserver;
 import javax.swing.*;
 import java.awt.*;
 
@@ -93,14 +96,6 @@ public final class ApplicationGUI {
     public void start()
     {
         this.mainGUIFrame.setVisible(true);
-    }
-
-    public JFrame getMainGUIFrame() {
-        return mainGUIFrame;
-    }
-
-    public ControlPanelComposite getControlPanel() {
-        return controlPanelComposite;
     }
 
 }

@@ -2,7 +2,7 @@ package Main.Listeners;
 
 import Main.CustomEventManager;
 import Main.EventType;
-import Main.FileIO.MazeFileReader;
+import Main.File.MazeFileReader;
 import Main.GUI.ControlPanelComposite;
 
 import javax.swing.*;
@@ -47,8 +47,6 @@ class FileButtonListener implements ActionListener {
 
         } catch (IOException ex) {
             controlPanelComposite.setStatusLabel("Błąd IO podczas czytania z pliku: " + ex.getClass().getName(), true);
-        } catch (MazeException ex) {
-            controlPanelComposite.setStatusLabel("Błąd podczas wczytywania labiryntu: " + ex.getMessage(), true);
         }
 
     }

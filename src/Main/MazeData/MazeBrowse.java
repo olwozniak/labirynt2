@@ -1,15 +1,11 @@
-package AmazeingGui.MazeData;
+package Main.MazeData;
 
-import AmazeingGui.CustomEventManager;
-import AmazeingGui.EventType;
+import Main.CustomEventManager;
+import Main.EventType;
 
 import java.util.*;
 
-public final class MazeBrowse
 public class MazeBrowse{
-
-
-
 
     public static final byte Route = -2; //sciezka
     public static final byte Wall = -1; //sciana
@@ -17,8 +13,8 @@ public class MazeBrowse{
 
     private String source; //źródło labiryntu
     private byte[][] maze; //tablica reprezentująca labirynt
-    private Coordinates entry; //współrzędne P
-    private Coordinates exit; //współrzędne K
+    private Coords entry; //współrzędne P
+    private Coords exit; //współrzędne K
     private boolean isSolved; //Czy rozwiązany?
 
     private static MazeBrowse instance; //jedyna instancja tej klasy
@@ -39,7 +35,7 @@ public class MazeBrowse{
         instance = new MazeBrowse();
     }
 
-    public synchronized void changeMaze(byte[][] maze, Coordinates entry, Coordinates exit, String source) { //zmienia labirynt na podstawie nowych danaych PO CO
+    public synchronized void changeMaze(byte[][] maze, Coords entry, Coords exit, String source) { //zmienia labirynt na podstawie nowych danaych PO CO
         this.maze = maze;
         this.entry = entry;
         this.exit = exit;
@@ -70,25 +66,25 @@ public class MazeBrowse{
         return maze.length;
     }
 
-    public synchronized void setExit(Coordinates newCoordinates) { //nowe współrzędne  wyjścia, sprawdza czy są w granicach labiryntu PO CO
-        if(newCoordinates.x >= width() || newCoordinates.y >= height()) {
-            System.err.println("Error setting the exit location in the maze: " + newCoordinates.x + ", " + newCoordinates.y);
+    public synchronized void setExit(Coords newCoords) { //nowe współrzędne  wyjścia, sprawdza czy są w granicach labiryntu PO CO
+        if(newCoords.x >= width() || newCoords.y >= height()) {
+            System.err.println("Error setting the exit location in the maze: " + newCoords.x + ", " + newCoords.y);
             return;
         }
         clearRoute();
-        if(newCoordinates.equals(entry))
+        if(newCoords.equals(entry))
             entry = null;
 
-        exit = newCoordinates;
+        exit = newCoords;
     }
 
-    public synchronized void setEntry(Coordinates newCoordinates) { //nowe współrzędne  wejścia, sprawdza czy są w granicach labiryntu PO CO
-        if(newCoordinates.x >= width() || newCoordinates.y >= height()) {
-            System.err.println("Error setting the exit location in the maze: " + newCoordinates.x + ", " + newCoordinates.y);
+    public synchronized void setEntry(Coords newCoords) { //nowe współrzędne  wejścia, sprawdza czy są w granicach labiryntu PO CO
+        if(newCoords.x >= width() || newCoords.y >= height()) {
+            System.err.println("Error setting the exit location in the maze: " + newCoords.x + ", " + newCoords.y);
             return;
         }
         clearRoute();
-        if(newCoordinates.equals(exit))
+        if(newCoords.equals(exit))
             exit = null;
 
         entry = newCoords;
@@ -144,38 +140,38 @@ public class MazeBrowse{
         while(!djQueue.isEmpty())
         {
             int currLen = djQueue.peekLength();
-            Coords currCoordinates = djQueue.popCoordinates();
+            Coords currCoords = djQueue.popCoords();
 
-            if(currCoordinates.equals(exit))
+            if(currCoords.equals(exit))
             {
                 solveFlag = true;
                 break;
             }
 
-            int x = currCoordinates.x;
-            int y = currCoordinates.y;
+            int x = currCoords.x;
+            int y = currCoords.y;
 
             if(x > 0){
                 if(intMaze[y][x-1] > currLen + 1) {
-                    djQueue.addToQueue(new Coordinates(x - 1, y), currLen + 1);
+                    djQueue.addToQueue(new Coords(x - 1, y), currLen + 1);
                     intMaze[y][x-1] = currLen + 1;
                 }
             }
             if(x < width() - 1){
                 if(intMaze[y][x+1] > currLen + 1) {
-                    djQueue.addToQueue(new Coordinates(x + 1, y), currLen + 1);
+                    djQueue.addToQueue(new Coords(x + 1, y), currLen + 1);
                     intMaze[y][x+1] = currLen + 1;
                 }
             }
             if(y > 0){
                 if(intMaze[y-1][x] > currLen + 1) {
-                    djQueue.addToQueue(new Coordinates(x, y - 1), currLen + 1);
+                    djQueue.addToQueue(new Coords(x, y - 1), currLen + 1);
                     intMaze[y-1][x] = currLen + 1;
                 }
             }
             if(y < height() - 1){
                 if(intMaze[y+1][x] > currLen + 1) {
-                    djQueue.addToQueue(new Coordinates(x, y + 1), currLen + 1);
+                    djQueue.addToQueue(new Coords(x, y + 1), currLen + 1);
                     intMaze[y+1][x] = currLen + 1;
                 }
             }
@@ -185,41 +181,41 @@ public class MazeBrowse{
             CustomEventManager.getInstance().callEvent(EventType.solveFinishEvent);
             return;
         }
-        Coordinates currCoordinates = exit;
+        Coords currCoords = exit;
         int currLen = intMaze[exit.y][exit.x];
 
         while(currLen > 1)
         {
             currLen--;
 
-            int x = currCoordinates.x;
-            int y = currCoordinates.y;
+            int x = currCoords.x;
+            int y = currCoords.y;
 
             if(x > 0){
                 if(intMaze[y][x-1] == currLen) {
                     maze[y][x-1] = -2;
-                    currCoordinates = new Coordinates(x-1, y);
+                    currCoords = new Coords(x-1, y);
                     continue;
                 }
             }
             if(x < width() - 1){
                 if(intMaze[y][x+1] == currLen) {
                     maze[y][x+1] = -2;
-                    currCoordinates = new Coordinates(x+1, y);
+                    currCoords = new Coords(x+1, y);
                     continue;
                 }
             }
             if(y > 0){
                 if(intMaze[y-1][x] == currLen) {
                     maze[y-1][x] = -2;
-                    currCoordinates = new Coordinates(x, y-1);
+                    currCoords = new Coords(x, y-1);
                     continue;
                 }
             }
             if(y < height() - 1){
                 if(intMaze[y+1][x] == currLen) {
                     maze[y+1][x] = -2;
-                    currCoordinates = new Coordinates(x, y+1);
+                    currCoords = new Coords(x, y+1);
                     continue;
                 }
             }

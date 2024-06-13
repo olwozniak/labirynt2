@@ -2,7 +2,7 @@ package Main.ActionObservers;
 
 import Main.GUI.ButtonEnum;
 import Main.GUI.ControlPanelComposite;
-import Main.MazeData.MazeDataSingleton;
+import Main.MazeData.MazeBrowse;
 
 import javax.swing.*;
 
@@ -17,7 +17,7 @@ public class ChangeCoordsObserver extends GuiObserver {
             SwingUtilities.invokeLater(this::call);
             return;
         }
-        MazeDataSingleton data = MazeDataSingleton.getInstance();
+        MazeBrowse data = MazeBrowse.getInstance();
 
         if (!controlPanelComposite.isChoosingExit() && !controlPanelComposite.isChoosingEntry()) {
             controlPanelComposite.setButtonState(ButtonEnum.chooseEntranceButton, true);

@@ -5,7 +5,7 @@ import Main.CustomEventManager;
 import Main.EventType;
 import Main.GUI.ButtonEnum;
 import Main.GUI.ControlPanelComposite;
-import Main.MazeData.MazeDataSingleton;
+import Main.MazeData.MazeBrowse;
 
 import javax.swing.event.MouseInputAdapter;
 import java.awt.event.MouseEvent;
@@ -22,7 +22,7 @@ public class MazeMouseActionListener extends MouseInputAdapter {
 
         Coords newCoords = new Coords(e.getX() / 8, e.getY()/8);
 
-        MazeDataSingleton data = MazeDataSingleton.getInstance();
+        MazeBrowse data = MazeBrowse.getInstance();
 
         if(data.width() <= e.getX()/8
                 || data.height() <= e.getY()/8)

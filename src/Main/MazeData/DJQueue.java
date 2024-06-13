@@ -1,18 +1,18 @@
-package AmazeingGui.MazeData;
+package Main.MazeData;
 
 import java.util.AbstractMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class DJQueue extends LinkedList<Map.Entry<Coordinates, Integer>> {
+public class DJQueue extends LinkedList<Map.Entry<Coords, Integer>> {
     public DJQueue()
     {
         super();
     }
 
-    public void addToQueue(Coordinates crd, int length)
+    public void addToQueue(Coords crd, int length)
     {
-        Map.Entry<Coordinates, Integer> newEntry = new AbstractMap.SimpleEntry<>(crd, length);
+        Map.Entry<Coords, Integer> newEntry = new AbstractMap.SimpleEntry<>(crd, length);
 
         add(newEntry);
     }
@@ -25,7 +25,7 @@ public class DJQueue extends LinkedList<Map.Entry<Coordinates, Integer>> {
         return peek().getValue();
     }
 
-    public Coordinates popCoordinates()
+    public Coords popCoords()
     {
         if(isEmpty())
             return null;
